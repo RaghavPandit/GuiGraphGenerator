@@ -7,6 +7,7 @@ HEIGHT = 600
 WIDTH = 800
 lineColor =("adf","black")
 markerColor = ("adf","black")
+barColor = []
 
 isBar = False
 isLine = True
@@ -31,6 +32,19 @@ def getLineColor():
     lineColor = colorchooser.askcolor()
     colorLabel.config(bg=lineColor[1])
 
+
+def getBarColor():
+    global barColorLabel
+    global barColor
+    val = barNo.get()
+    color = tk.colorchooser.askcolor()
+    if color:
+        barColor.append(color[1])
+    barColorLabel.config(bg=barColor[barNo.get()-1])
+    if barNo.get() != val:
+        barColorLabel.config(bg=barColor[barNo.get()-1])
+        val = barNo.get()
+    print(barColor)
 def barFrameRaise():
     mainFrameBar.tkraise()
     global isBar , isLine
@@ -69,10 +83,10 @@ def generate():
 #Contains All images in need in the programm
 
 #Background image
-bgImage = ImageTk.PhotoImage(Image.open(r"C:\Users\Raghav Pandit\Documents\CsProject\Images\background.jpg"))
+bgImage = ImageTk.PhotoImage(Image.open(r"Images\background.jpg"))
 
 #Image of line icon
-lineImage = ImageTk.PhotoImage(Image.open(r"C:\Users\Raghav Pandit\Documents\CsProject\Images\icons8-line-chart-64.png"))
+lineImage = ImageTk.PhotoImage(Image.open(r"Images\icons8-line-chart-64.png"))
 
 #Image of bar chart
 barImage = ImageTk.PhotoImage(Image.open(r"Images\icons8-bar-chart-96.png").resize((69,69),Image.ANTIALIAS))
@@ -192,12 +206,20 @@ tk.Label(mainFrameBar,text="Title",font=("Caslon",20)).place(relx=.20,rely=.88)
 tk.Entry(mainFrameBar,textvariable = barTitle,font = ("Caslon",15)).place(relx = .30,rely=.89)
 
 #Bar color
+tk.Label(mainFrameBar,text="Bar Colors:-",font=("Caslon",18)).place(relx=.01,rely=.58)
+
 options=[x for x in range(1,len(eval(xValueBar.get("1.0",tk.END)))+1)]
 print(options)
 barNo = tk.IntVar()
 barNo.set(options[0])
 
-tk.OptionMenu(mainFrameBar,barNo,*options).place(relx=.1,rely=.70)
+tk.OptionMenu(mainFrameBar,barNo,*options).place(relx=.01,rely=.65)
+
+
+tk.Button(mainFrameBar,text="Choose Line Color",command=getBarColor,font=("Caslon",10)).place(relx=.1,rely=.58)
+barColorLabel = tk.Label(mainFrameBar,text="Choosen Color",font=("Caslon",13),bg="white")
+barColorLabel.place(relx=.15,rely=.70,relwidth=.18)
+
 
 ####################__XXXXXXXXXXXXXX__######################
 
