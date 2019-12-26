@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import colorchooser
 from PIL import ImageTk,Image
 import matplotlib.pyplot as pl
+from tkinter.filedialog import askopenfile
+import csv
+from collections import Counter
 
 HEIGHT = 600
 WIDTH = 800
@@ -19,6 +22,9 @@ root.title("Graph Generator")
 ####################__FUNCTIONS_######################
 #Contains all the function required in programm
 
+def reverse(ls):
+    return [ele for ele in reversed(ls)]
+
 def lineChart(xValues,yValues,xLabel,yLabel,ls,lw,color,marker,markersize,markercolor,title):
     xValues=eval(xValues)
     yValues = eval(yValues)
@@ -31,8 +37,26 @@ def lineChart(xValues,yValues,xLabel,yLabel,ls,lw,color,marker,markersize,marker
     pl.show()
 
 def barChart(xLabel,yLabel,yValues,xValues,title,width=.8):
-
-    pl.bar(eval(xValues),eval(yValues),width=width)
+    # print(xValues)
+    if xValues.find(" "):
+        xValues = xValues.split(" ")
+        yValues = yValues.split(" ")
+        print(xValues,yValues)
+        print("Space")
+        print(type(xValues),type(yValues))
+    else:
+        xValues = xValues.split(",")
+        yValues = yValues.split(",")
+        print(xValues,yValues)
+        print(type(xValues),type(yValues))
+    
+    if len(xValues) > 8:
+        yValues = reverse(yValues)
+        print(yValues)
+        pl.barh(xValues,yValues,height=width)
+        xLabel,yLabel=yLabel,xLabel
+    else:
+        pl.bar(xValues,yValues,width=width)
 
     pl.xlabel(xLabel)
     pl.ylabel(yLabel)
@@ -40,6 +64,26 @@ def barChart(xLabel,yLabel,yValues,xValues,title,width=.8):
     pl.show()
 
 
+def fileReader():
+    fileName = askopenfile(parent = root)
+
+    showFileName.config(text=fileName.name)
+    with open(fileName.name,"r") as f:
+        csv_reader = csv.DictReader(f)
+        counter = Counter()
+        
+        for row in csv_reader:
+            counter.update(row["LanguagesWorkedWith"].split(";"))
+        
+        print(counter.most_common(15))
+        name = []
+        num = []
+        for data in counter.most_common(15):
+            name.append(data[0])
+            num.append(data[1])
+        
+        xValueBar.insert(tk.END,name)
+        yValueBar.insert(tk.END,num)
 
 def getMarkerColor():
     global markerColorLabel
@@ -193,7 +237,7 @@ tk.Entry(mainFrameBar,textvariable = yLabelValueBar,font = ("Caslon",15)).place(
 tk.Label(mainFrameBar,text="x-values:-",font=("Caslon",18)).place(relx=.01,rely=.3)
 xValueBar = tk.Text(mainFrameBar)
 xValueBar.place(relx=.01,rely = .38,relheight = .20,relwidth=.48)
-xValueBar.insert(tk.END,"1,2,3,4")
+
 
 #Y-Value and it's entry
 tk.Label(mainFrameBar,text="y-values:-",font=("Caslon",18)).place(relx=.5,rely=.3)
@@ -213,10 +257,12 @@ barTitle = tk.StringVar()
 tk.Label(mainFrameBar,text="Title",font=("Caslon",20)).place(relx=.20,rely=.88)
 tk.Entry(mainFrameBar,textvariable = barTitle,font = ("Caslon",15)).place(relx = .30,rely=.89)
 
-#To read from csv file
-tk.Label(mainFrameBar,text="Choose your prefered method:-",font=("Caslon",15)).place(relx=.01,rely=.58)
-tk.Radiobutton(mainFrameBar,text="CSV",font=("Caaslon",12)).place(relx=.01,rely=.70)
-tk.Radiobutton(mainFrameBar,text="CSV",font=("Caaslon",12)).place(relx=.01,rely=.78)
+#To read data from csv file
+tk.Label(mainFrameBar,text="Use CSV:-",font=("Caslon",18)).place(relx=.01,rely=.6)
+tk.Button(mainFrameBar,text="Open",command=fileReader).place(relx=.01,rely=.66)
+showFileName = tk.Label(mainFrameBar,text="File name",font=("Caslon",12))
+showFileName.place(relx=.09,rely=.66)
+
 ####################__XXXXXXXXXXXXXX__######################
 
 
