@@ -1,13 +1,12 @@
 import tkinter as tk
 from tkinter import colorchooser
 from PIL import ImageTk,Image
-from graph import *
+import matplotlib.pyplot as pl
 
 HEIGHT = 600
 WIDTH = 800
 lineColor =("adf","black")
 markerColor = ("adf","black")
-barColor = []
 
 isBar = False
 isLine = True
@@ -19,6 +18,28 @@ root.title("Graph Generator")
 
 ####################__FUNCTIONS_######################
 #Contains all the function required in programm
+
+def lineChart(xValues,yValues,xLabel,yLabel,ls,lw,color,marker,markersize,markercolor,title):
+    xValues=eval(xValues)
+    yValues = eval(yValues)
+
+    pl.plot(xValues,yValues,ls=ls,linewidth=lw,color=color,marker=marker,markersize=markersize,markerfacecolor=markercolor)
+    pl.title(title)
+    pl.xlabel(xLabel)
+    pl.ylabel(yLabel)
+
+    pl.show()
+
+def barChart(xLabel,yLabel,yValues,xValues,title,width=.8):
+
+    pl.bar(eval(xValues),eval(yValues),width=width)
+
+    pl.xlabel(xLabel)
+    pl.ylabel(yLabel)
+    pl.title(title)
+    pl.show()
+
+
 
 def getMarkerColor():
     global markerColorLabel
@@ -32,19 +53,6 @@ def getLineColor():
     lineColor = colorchooser.askcolor()
     colorLabel.config(bg=lineColor[1])
 
-
-def getBarColor():
-    global barColorLabel
-    global barColor
-    val = barNo.get()
-    color = tk.colorchooser.askcolor()
-    if color:
-        barColor.append(color[1])
-    barColorLabel.config(bg=barColor[barNo.get()-1])
-    if barNo.get() != val:
-        barColorLabel.config(bg=barColor[barNo.get()-1])
-        val = barNo.get()
-    print(barColor)
 def barFrameRaise():
     mainFrameBar.tkraise()
     global isBar , isLine
@@ -205,22 +213,10 @@ barTitle = tk.StringVar()
 tk.Label(mainFrameBar,text="Title",font=("Caslon",20)).place(relx=.20,rely=.88)
 tk.Entry(mainFrameBar,textvariable = barTitle,font = ("Caslon",15)).place(relx = .30,rely=.89)
 
-#Bar color
-tk.Label(mainFrameBar,text="Bar Colors:-",font=("Caslon",18)).place(relx=.01,rely=.58)
-
-options=[x for x in range(1,len(eval(xValueBar.get("1.0",tk.END)))+1)]
-print(options)
-barNo = tk.IntVar()
-barNo.set(options[0])
-
-tk.OptionMenu(mainFrameBar,barNo,*options).place(relx=.01,rely=.65)
-
-
-tk.Button(mainFrameBar,text="Choose Line Color",command=getBarColor,font=("Caslon",10)).place(relx=.1,rely=.58)
-barColorLabel = tk.Label(mainFrameBar,text="Choosen Color",font=("Caslon",13),bg="white")
-barColorLabel.place(relx=.15,rely=.70,relwidth=.18)
-
-
+#To read from csv file
+tk.Label(mainFrameBar,text="Choose your prefered method:-",font=("Caslon",15)).place(relx=.01,rely=.58)
+tk.Radiobutton(mainFrameBar,text="CSV",font=("Caaslon",12)).place(relx=.01,rely=.70)
+tk.Radiobutton(mainFrameBar,text="CSV",font=("Caaslon",12)).place(relx=.01,rely=.78)
 ####################__XXXXXXXXXXXXXX__######################
 
 
