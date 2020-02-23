@@ -1,11 +1,17 @@
+#Project on GUI graph generator 
+#This can be used to generate graphs and charts with the help of graphical user interface,
+#so it is easily usable to any person
+#made by :- Raghav Pandit
+
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import colorchooser
 from PIL import ImageTk,Image
 import matplotlib.pyplot as pl
 from tkinter.filedialog import askopenfile
 import csv
 from collections import Counter
-
+pl.style.use("fivethirtyeight")
 HEIGHT = 600
 WIDTH = 800
 lineColor =("adf","black")
@@ -33,30 +39,15 @@ def lineChart(xValues,yValues,xLabel,yLabel,ls,lw,color,marker,markersize,marker
     pl.title(title)
     pl.xlabel(xLabel)
     pl.ylabel(yLabel)
-
+    #pl.grid(True)
+    print(pl.style.available)
+    
     pl.show()
 
 def barChart(xLabel,yLabel,yValues,xValues,title,width=.8):
-    # print(xValues)
-    if xValues.find(" "):
-        xValues = xValues.split(" ")
-        yValues = yValues.split(" ")
-        print(xValues,yValues)
-        print("Space")
-        print(type(xValues),type(yValues))
-    else:
-        xValues = xValues.split(",")
-        yValues = yValues.split(",")
-        print(xValues,yValues)
-        print(type(xValues),type(yValues))
     
-    if len(xValues) > 8:
-        yValues = reverse(yValues)
-        print(yValues)
-        pl.barh(xValues,yValues,height=width)
-        xLabel,yLabel=yLabel,xLabel
-    else:
-        pl.bar(xValues,yValues,width=width)
+
+    pl.bar(eval(xValues),eval(yValues),width=width)
 
     pl.xlabel(xLabel)
     pl.ylabel(yLabel)
@@ -64,26 +55,15 @@ def barChart(xLabel,yLabel,yValues,xValues,title,width=.8):
     pl.show()
 
 
-def fileReader():
-    fileName = askopenfile(parent = root)
+def piChart(values,labels,title):
+    values = eval(values)
+    labels = eval(labels)
+    pl.pie(values,labels=labels)
+    pl.title(title)
+    pl.plot()
+    pl.show()
 
-    showFileName.config(text=fileName.name)
-    with open(fileName.name,"r") as f:
-        csv_reader = csv.DictReader(f)
-        counter = Counter()
-        
-        for row in csv_reader:
-            counter.update(row["LanguagesWorkedWith"].split(";"))
-        
-        print(counter.most_common(15))
-        name = []
-        num = []
-        for data in counter.most_common(15):
-            name.append(data[0])
-            num.append(data[1])
-        
-        xValueBar.insert(tk.END,name)
-        yValueBar.insert(tk.END,num)
+
 
 def getMarkerColor():
     global markerColorLabel
@@ -125,8 +105,17 @@ def generate():
     elif isBar:
         barChart(xLabelValueBar.get(),yLabelValueBar.get(),yValueBar.get('1.0',tk.END),xValueBar.get('1.0',tk.END),barTitle.get(),barWidth.get())
     else:
-        pass
+        piChart(piValues.get('1.0',tk.END),piLabels.get('1.0',tk.END),piTitle.get())
 
+def about():
+    messagebox.showinfo("About Creator","This program is created by Raghav Pandit of class 12 Science")
+man='''
+Inserting the value:-
+To insert value seperate them by commas ',' and use inverted commas for strings but not for integers
+Example :- X-Values = 'val1','val2','val3'
+            Y-Values = 10,20,30 '''
+def manual():
+    messagebox.showinfo("User_Manual",man)
 ####################__XXXXXXXXX_######################
 
 
@@ -161,6 +150,17 @@ piImage = ImageTk.PhotoImage(Image.open(r"Images\icons8-doughnut-chart-256.png")
 ####################__WIDGETS__######################
 #Contains all the widgets
 
+#Menu
+
+menu = tk.Menu(root)
+helpMenu = tk.Menu(root)
+aboutMenu = tk.Menu()
+
+menu.add_cascade(label="Help",menu=helpMenu)
+
+helpMenu.add_command(label="About",command=about)
+helpMenu.add_command(label="User-Manual",command=manual)
+root.config(menu=menu)
 
 #Setting background image
 imageLabel = tk.Label(root,image=bgImage)
@@ -206,6 +206,23 @@ tk.Label(mainFramePi,text="Pi Chart",font=("Caslon",28,"bold")).place(rely=.03,r
 
 piImageLabel = tk.Label(mainFramePi,image=piImage)
 piImageLabel.place(relx=.01,rely=.01)
+
+#X-Value and it's text area
+tk.Label(mainFramePi,text="Values:-",font=("Caslon",18)).place(relx=.01,rely=.3)
+piValues = tk.Text(mainFramePi)
+piValues.place(relx=.01,rely = .38,relheight = .20,relwidth=.48)
+
+
+#Y-Value and it's entry
+tk.Label(mainFramePi,text="Labels",font=("Caslon",18)).place(relx=.5,rely=.3)
+piLabels = tk.Text(mainFramePi)
+piLabels.place(relx=.5,rely=.38,relwidth=.48,relheight = .20)
+
+#Title of bar graph
+piTitle = tk.StringVar()
+tk.Label(mainFramePi,text="Title",font=("Caslon",20)).place(relx=.20,rely=.88)
+tk.Entry(mainFramePi,textvariable = piTitle,font = ("Caslon",15)).place(relx = .30,rely=.89)
+
 
 ####################__XXXXXXXXXXXXX__######################
 
@@ -256,12 +273,6 @@ tk.Entry(mainFrameBar,font=("Caslon",18),textvariable=barWidth,).place(relx=.70,
 barTitle = tk.StringVar()
 tk.Label(mainFrameBar,text="Title",font=("Caslon",20)).place(relx=.20,rely=.88)
 tk.Entry(mainFrameBar,textvariable = barTitle,font = ("Caslon",15)).place(relx = .30,rely=.89)
-
-#To read data from csv file
-tk.Label(mainFrameBar,text="Use CSV:-",font=("Caslon",18)).place(relx=.01,rely=.6)
-tk.Button(mainFrameBar,text="Open",command=fileReader).place(relx=.01,rely=.66)
-showFileName = tk.Label(mainFrameBar,text="File name",font=("Caslon",12))
-showFileName.place(relx=.09,rely=.66)
 
 ####################__XXXXXXXXXXXXXX__######################
 
